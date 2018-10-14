@@ -6,14 +6,17 @@ You might find certain default Python packages immensely helpful.
 """
 
 # Good luck!
-
+import collections
 """
 most_common_char
 
 Given an input string s, return the most common character in s.
 """
 def most_common_char(s):
-	pass
+    if (s == ''):
+        return None
+    counter = collections.Counter(s)
+    return max(counter, key = lambda cha: counter[cha])
 
 
 """
@@ -37,7 +40,14 @@ Example 2:
 		None
 """
 def alphabet_finder(s):
-	pass
+    result = set()
+    for index, cha in enumerate(s):
+        if (cha.isalpha()):
+            result.add(cha.lower())
+            if (len(result) == 26):
+                return s[:index + 1]
+    return None
+
 
 
 """
@@ -56,13 +66,26 @@ Example:
 		[1, 6]
 """
 def longest_unique_subarray(arr):
-	pass
-
+    #L is a changing temp that stores unrepetitive subarray
+    L = []
+    #key is length, value is start_index for every unique subarray
+    result = dict()
+    for i in range(len(arr)):
+        if arr[i] in L:
+            #store the unique array L, and its end index is at i - 1
+            result[len(L)] = i - len(L)
+            #update L
+            L = L[L.index(arr[i]) + 1:]
+        L.append(arr[i])
+    #update the last one, its end index should be the last index of arr
+    result[len(L)] = len(arr) - len(L)
+    longest_len = max(result)
+    return [result[longest_len], longest_len]
 
 """
 string_my_one_true_love
 
-A former(?) CA for this course really like[d] strings that have the same occurrences of letters.
+A former(?) CA for this course really like strings that have the same occurrences of letters.
 This means the staff member likes "aabbcc", "ccddee", "abcabcabc", etcetera.
 
 But the person who wrote all of your homework sets wants to trick the staff with really long strings,
@@ -98,8 +121,20 @@ Example 3:
 	Return:
 		False
 """
+
 def string_my_one_true_love(s):
-	pass
+    if (len(s) == 0):
+        return False
+    counter = collections.Counter(s)
+    L = list(set(counter.values()))
+    #there's only one left
+    if (len(L) == 1):
+        return True
+    #if there's two left, try to remove 1
+    if (len(L) == 2 & abs(L[0] - L[1]) == 1 or L[0] == 1 or L[1] == 1):
+        return True
+    return False
+
 
 
 """
@@ -117,8 +152,16 @@ Example:
 		1961
 """
 def alive_people(data):
-	pass
-
+	#todo check invalid condition
+    d = dict()
+    for ele in data:
+        startYear, time = ele
+        for year in range(startYear, startYear + time + 1):
+            if year in d:
+                d[year] += 1
+            else:
+                d[year] = 1
+    return max(d, key = lambda year: d[year])
 
 """
 three_sum
@@ -140,7 +183,23 @@ Example:
 		]
 """
 def three_sum(arr, t):
-	pass
+    result = []
+    arr.sort()
+    for i in range(len(arr)):
+        start, end = i + 1, len(arr) - 1
+        while ( i < start < end):
+            triplet_sum = arr[i] + arr[start] + arr[end]
+            if (triplet_sum == t):
+                if [arr[i], arr[start], arr[end]] not in result:
+                    result.append([arr[i], arr[start], arr[end]])
+                #update result manually
+                start += 1
+                end -= 1
+            if (triplet_sum < t):
+                start += 1
+            elif (triplet_sum > t):
+                end -= 1
+    return result
 
 
 """
@@ -161,9 +220,27 @@ Example 2:
 	Return:
 		4294967296 ** (1 / 16) (i.e., 4)
 """
-def happy_numbers(n):
-	pass
+def isHappyNum(n: int) -> bool:
+    result = {n}
+    temp = n
+    while True:
+        nextVal = sum((int(i)**2 for i in str(temp)))
+        temp = nextVal
+        if nextVal in result:
+            #goes into a cycle from here
+            if nextVal == 1:
+                return True
+            return False
+        result.add(nextVal)
 
+def happy_numbers(n: int) -> int:
+    if (n < 1):
+        return 0
+    count = 0
+    for i in range(1, n + 1):
+        if (isHappyNum(i)):
+            count += 1
+    return count
 
 """
 zero_sum_subarray
@@ -194,6 +271,10 @@ Example 2:
 		[1, 2]
 """
 def zero_sum_subarray(arr):
-    pass 
+    for i in range(len(arr)):
+        for j in range(i, len(arr)):
+            if sum(arr[i: j + 1]) == 0:
+                return [i, j - i + 1]
+    return None
 
 
